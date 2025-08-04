@@ -1,7 +1,8 @@
 const MESSAGES = {
 	CREATED_SUCCESS: "Tạo ngành học thành công",
 	UPDATED_SUCCESS: "Cập nhật ngành học thành công",
-	DELETED_SUCCESS: "Xóa mềm ngành học thành công",
+	DELETED_SUCCESS: "Xóa ngành học thành công",
+	SOFT_DELETED_SUCCESS: "Xoá mềm ngành học thành công",
 	RESTORED_SUCCESS: "Khôi phục ngành học thành công",
 	GET_SUCCESS: "Lấy danh sách ngành học thành công",
 	GET_BY_ID_SUCCESS: "Lấy thông tin ngành học thành công",

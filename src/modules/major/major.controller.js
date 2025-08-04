@@ -40,7 +40,7 @@ export const softDeleteMajor = handleAsync(async (req, res) => {
 	if (!major) {
 		throw createError(404, MESSAGES.NOT_FOUND);
 	}
-	return createResponse(res, 200, MESSAGES.DELETED_SUCCESS, major);
+	return createResponse(res, 200, MESSAGES.SOFT_DELETED_SUCCESS, major);
 });
 
 // Restore a soft-deleted major

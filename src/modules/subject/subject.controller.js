@@ -38,7 +38,7 @@ export const softDeleteSubject = handleAsync(async (req, res) => {
 	if (!subject) {
 		throw createError(404, MESSAGES.NOT_FOUND);
 	}
-	return createResponse(res, 200, MESSAGES.DELETED_SUCCESS, subject);
+	return createResponse(res, 200, MESSAGES.SOFT_DELETED_SUCCESS, subject);
 });
 
 
