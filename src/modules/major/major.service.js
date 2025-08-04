@@ -41,3 +41,6 @@ export const restoreMajor = async (id) => {
 		{ new: true }
 	);
 };
+export const deleteMajor = async (id) => {
+	return await Major.findOneAndDelete({ _id: id, deletedAt: null});
+};

@@ -51,3 +51,11 @@ export const restoreMajor = handleAsync(async (req, res) => {
 	}
 	return createResponse(res, 200, MESSAGES.RESTORED_SUCCESS, major);
 });
+
+export const deleteMajor = handleAsync(async (req, res) => {
+	const major = await majorService.deleteMajor(req.params.id);
+	if(!major){
+		throw createError(404, MESSAGES.NOT_FOUND)
+	}
+	return createResponse(res, 200, MESSAGES.DELETED_SUCCESS, major);
+})

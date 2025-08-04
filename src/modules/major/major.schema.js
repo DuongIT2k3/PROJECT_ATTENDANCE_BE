@@ -20,6 +20,7 @@ export const updateMajorSchema = z
 			.min(1, "Code is required")
 			.regex(/^[A-Z]{2,}$/, "Code must be uppercase letters only")
 			.optional(),
+		deletedAt: z.date().optional().nullable(),	
 	})
 	.strict()
 	.refine((data) => Object.keys(data).length > 0, {
