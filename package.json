@@ -1,0 +1,31 @@
+{
+  "name": "be-attendance",
+  "version": "1.0.0",
+  "description": "project student attendance",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently \"nodemon --experimental-specifier-resolution=node index.js\" \"npm run swagger\"",
+    "swagger": "node --experimental-specifier-resolution=node src/common/configs/swagger-setup.js"
+  },
+  "keywords": [
+    "nodejs"
+  ],
+  "author": "duongdd",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "concurrently": "^9.2.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "fs": "^0.0.1-security",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.17.0",
+    "nodemailer": "^7.0.5",
+    "nodemon": "^3.1.10",
+    "swagger-autogen": "^2.23.7",
+    "swagger-ui-express": "^5.0.1",
+    "zod": "^4.0.14"
+  }
+}

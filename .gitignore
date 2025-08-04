@@ -1,0 +1,27 @@
+/node_modules
+dist
+build
+coverage
+*.cache
+*.tmp
+*.bak
+*.tgz
+*.zip
+*.tar.gz
+*.log
+
+# Environment variables
+.env
+*.env
+*.env.local
+*.env.development
+*.env.test
+*.env.production
+
+# IDE and OS files
+.vscode
+.idea
+*.sublime-workspace
+*.sublime-project
+.DS_Store
+*.DS_Store
