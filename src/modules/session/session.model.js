@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { RoomEnum, ShiftEnum } from "../../common/constants/enum";
+import { RoomEnum, ShiftEnum } from "../../common/constants/enum.js";
 
 const sessionSchema = new mongoose.Schema(
   {
@@ -30,4 +30,5 @@ const sessionSchema = new mongoose.Schema(
   },
 );
 
-export default mongoose.model("Session", sessionSchema);
+const Session = mongoose.model("Session", sessionSchema);
+export default Session;

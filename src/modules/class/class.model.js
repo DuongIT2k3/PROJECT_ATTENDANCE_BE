@@ -42,6 +42,18 @@ const classSchema = new mongoose.Schema(
       enum: Object.values(ShiftEnum),
       required: true,
     },
+    room: {
+      type: String,
+      default: null,
+    },
+    description: {
+      type: String,
+      default: null,
+    },
+    maxStudents: {
+      type: Number,
+      default: 100, // Default maximum number of students
+    },
     deletedAt: {
       type: Date,
       default: null,
@@ -59,4 +71,5 @@ const classSchema = new mongoose.Schema(
   },
 );
 
-export default mongoose.model("Class", classSchema);
+const Class = mongoose.model("Class", classSchema);
+export default Class;
