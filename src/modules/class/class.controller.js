@@ -1,11 +1,12 @@
 import * as classService from "./class.service.js";
 import handleAsync from "../../common/utils/async-handler.js";
 import { createResponse } from "../../common/utils/create-response.js";
-import { createError } from "../../common/utils/create-error.js";
+import { createError, throwError } from "../../common/utils/create-error.js";
 import MESSAGES from "./class.message.js";
 
 export const createClass = handleAsync(async (req, res) => {
     const classInstance = await classService.createClass(req.body);
+    !classInstance && throwError(400, MESSAGES.CREATE_ERROR);
     return createResponse(res, 201, MESSAGES.CREATED_SUCCESS, classInstance);
 });
 

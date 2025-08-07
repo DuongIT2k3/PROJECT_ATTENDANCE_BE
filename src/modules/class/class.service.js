@@ -5,46 +5,48 @@ import Session from "../session/session.model.js";
 import { createError } from "../../common/utils/create-error.js";
 import { generateSessionDates } from "./class.utils.js";
 
-export const createClass = async (data) => {
-    const session = await mongoose.startSession();
-    session.startTransaction();
+    export const createClass = async (data) => {
+        const session = await mongoose.startSession();
 
-    try{
-        const { totalSessions, startDate, daysOfWeek } = data;
-        if(!totalSessions || !startDate || !daysOfWeek) {
-            throw createError(400, "Thiếu totalSessions, startDate, hoặc daysOfWeek");
+        session.startTransaction()
+
+        try{
+            const { totalSessions, startDate, daysOfWeek } = data;
+            if(!totalSessions || !startDate || !daysOfWeek) {
+                throw createError(400, "Thiếu totalSessions, startDate, hoặc daysOfWeek");
+            }
+            const classInstance = await Class.create([data], { session });
+            const createdClass = classInstance[0];
+
+            console.log(daysOfWeek)
+
+            const sessionDates = generateSessionDates(
+                new Date(startDate),
+                totalSessions,
+                daysOfWeek,
+            );
+
+            const sessions = sessionDates.map((sessionDate) => ({
+                classId: createdClass._id,
+                sessionDate,
+                note: "",
+            }));
+            await Session.insertMany(sessions, { session });
+
+            await session.commitTransaction();
+            session.endSession();
+
+            return classInstance[0];
+        }catch(error){
+            // console.log(error)
+                await session.abortTransaction();
+            session.endSession();
+            throw createError(
+                error.status || 500,
+                error.message || "Failed to create class",
+            );
         }
-        const classInstance = await Class.create([data], { session });
-        const createdClass = classInstance[0];
-
-        const datesOfWeek = daysOfWeek.split(",").map(Number);
-
-        const sessionDates = generateSessionDates(
-            new Date(startDate),
-            totalSessions,
-            datesOfWeek,
-        );
-        const sessions = sessionDates.map((sessionDate) => ({
-            classId: createdClass._id,
-            sessionDate,
-            note: "",
-        }));
-
-        await Session.insertMany(sessions, { session });
-
-        await session.commitTransaction();
-        session.endSession();
-
-        return classInstance[0];
-    }catch(error){
-        await session.abortTransaction();
-        session.endSession();
-        throw createError(
-            error.status || 500,
-            error.message || "Failed to create class",
-        );
-    }
-};
+    };
 export const getAllClasses = async (query) => {
     const { includeDeleted = false, ...queryParams } = query;
     const data = await queryBuilder(
