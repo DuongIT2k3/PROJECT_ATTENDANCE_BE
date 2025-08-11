@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { StatusEnum } from "../../common/constants/enum";
+import { StatusEnum } from "../../common/constants/enum.js";
 
 const attendanceSchema = new mongoose.Schema(
   {
@@ -22,6 +22,10 @@ const attendanceSchema = new mongoose.Schema(
       type: String,
       required: false,
     },
+    deletedAt: {
+      type: Date,
+      default : null,
+    },
   },
   {
     timestamps: true,
@@ -30,4 +34,5 @@ const attendanceSchema = new mongoose.Schema(
   },
 );
 
-export default mongoose.model("Attendance", attendanceSchema);
+const Attendance = mongoose.model("Attendance", attendanceSchema);
+export default Attendance;
