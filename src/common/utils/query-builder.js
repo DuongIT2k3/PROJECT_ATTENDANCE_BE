@@ -8,7 +8,7 @@ export const queryBuilder = async (Model, queryParams, options = {}) => {
     order = "desc",
     search,
     searchFields = [],
-    includeDeleted = false,
+    isDeleted,
     ...filters
   } = queryParams;
 
@@ -17,9 +17,15 @@ export const queryBuilder = async (Model, queryParams, options = {}) => {
   // Xây dựng điều kiện truy vấn
   const queryConditions = {};
 
-  // Xử lý soft delete
-  if (!includeDeleted) {
+  // * Nếu không truyền isDeleted (undefined) thì lấy tất cả dữ liệu chưa xoá mềm và đã xoá mềm
+  // * Nếu truyền isDeleted là false thì chỉ lấy dữ liệu chưa xoá mềm
+  if (isDeleted === "false") {
     queryConditions.deletedAt = null;
+  }
+
+  //* Nếu truyền isDeleted là true thì chỉ lấy cả dữ liệu đã xoá mềm
+  if (isDeleted === "true") {
+    queryConditions.deletedAt = { $ne: null };
   }
 
   // Áp dụng bộ lọc từ query parameters
@@ -49,6 +55,8 @@ export const queryBuilder = async (Model, queryParams, options = {}) => {
       });
     });
   }
+
+  // await Class.find({}).populate({path: "teacherId", select: "username fullname, email"}).populate({path: "majorId", select: "name code"}).populate({})
 
   // Áp dụng sắp xếp
   const sortOrder = order === "desc" ? -1 : 1;

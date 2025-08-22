@@ -12,7 +12,6 @@ export const getAllMajors = async (query) => {
 	const { includeDeleted = false, ...queryParams } = query;
 	const data = await queryBuilder(Major, {
 		...queryParams,
-		includeDeleted: includeDeleted === "true",
 		searchFields: ["name", "code", "description"],
 	});
 	return data;
