@@ -71,7 +71,6 @@ export const getAllUsers = async(query) => {
     const { includeDeleted = false, ...queryParams } = query;
     const data = await queryBuilder(User, {
         ...queryParams,
-        includeDeleted: includeDeleted === "true",
         searchFields: ["fullname", "email", "username"],
     });
     return data;

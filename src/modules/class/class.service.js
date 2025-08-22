@@ -53,7 +53,6 @@ export const getAllClasses = async (query) => {
         Class,
         {
             ...queryParams,
-            includeDeleted: includeDeleted === "true",
             searchFields: ["name", "teacherId", "subjectId", "majorId"],
         },
         {
