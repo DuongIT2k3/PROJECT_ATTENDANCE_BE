@@ -28,6 +28,57 @@ export const checkAttendanceStatus = async (sessionId, user) =>{
     };
 
 };
+const validateAttendanceData = async (
+  sessionId,
+  attendances,
+  user,
+  session,
+) => {
+  // Kiểm tra session tồn tại
+  const sessionExists = await Session.findById(sessionId).session(session);
+  !sessionExists && throwError(404, MESSAGES.SESSION_NOT_FOUND);
+
+  // Kiểm tra lớp học
+  const classInstance = await Class.findById(sessionExists.classId).session(
+    session,
+  );
+  !classInstance && throwError(404, MESSAGES.CLASS_NOT_FOUND);
+
+  // Kiểm tra quyền: teacher chỉ cập nhật điểm danh cho lớp mình phụ trách
+  const checkTeacher =
+    user.role === RoleEnum.TEACHER &&
+    classInstance.teacherId.toString() === user._id.toString();
+  !checkTeacher &&
+    user.role !== RoleEnum.SUPER_ADMIN &&
+    throwError(
+      403,
+      `Bạn không phải giảng viên lớp này, bạn cũng không phải ${RoleEnum.SUPER_ADMIN} nên không thể cập nhật điểm danh`,
+    );
+
+  // Kiểm tra tất cả studentId trong attendances
+  const studentIds = attendances.map((att) => att.studentId);
+  const validStudents = await User.find({
+    _id: { $in: studentIds },
+    role: "student",
+  }).session(session);
+  validStudents.length !== studentIds.length &&
+    throwError(
+      400,
+      "Một hoặc nhiều ID sinh viên không hợp lệ hoặc không phải là sinh viên",
+    );
+
+  const classStudentIds = classInstance.studentIds.map((id) => id.toString());
+  !studentIds.every((id) => classStudentIds.includes(id)) &&
+    throwError(400, "Một hoặc nhiều sinh viên không thuộc lớp này");
+
+  return {
+    sessionExists,
+    classInstance,
+    studentIds,
+    classStudentIds,
+    isValid: true,
+  };
+};
 
 export const createAttendance = async (data, user) => {
     const session = await mongoose.startSession();
@@ -95,12 +146,12 @@ export const createAttendance = async (data, user) => {
     }
 };
 
-export const updateAttendance = async (sessionId, data, user) => {
+export const updateAttendance = async ( data, user) => {
     const session = await mongoose.startSession();
     session.startTransaction();
 
     try {
-        const { attendances } = data;
+        const { sessionId, attendances } = data;
 
         const sessionExists = await Session.findById(sessionId).session(session)
         !sessionExists && throwError(400, MESSAGES.SESSION_NOT_FOUND)

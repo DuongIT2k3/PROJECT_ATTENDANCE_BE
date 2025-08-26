@@ -23,6 +23,7 @@ export const verifyUser = async (req, res, next) => {
 		req.user = {
 			id: decoded._id,
 			role: user.role,
+			_id: decoded.id,
 		};
 		next();
 	} catch (error) {

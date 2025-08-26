@@ -24,7 +24,19 @@ export const getSubjectById = async (id) => {
 };
 
 export const updateSubject = async (id, data) => {
-    return await subjectModel.findOneAndUpdate({ _id: id, deletedAt: null}, { $set: data }, { new: true, runValidators: true });
+    if (!data.englishName) {
+    throw new Error("English name là bắt buộc");
+  }
+  return await subjectModel.findOneAndUpdate(
+    { _id: id, deletedAt: null },
+    {
+      ...data,
+      code: await generateSubjectCode(data.englishName),
+    },
+    {
+      new: true,
+    },
+  );
 }
 
 export const softDeleteSubject = async (id) => {

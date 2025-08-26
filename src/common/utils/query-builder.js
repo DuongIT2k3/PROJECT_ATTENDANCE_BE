@@ -29,10 +29,34 @@ export const queryBuilder = async (Model, queryParams, options = {}) => {
   }
 
   // Áp dụng bộ lọc từ query parameters
-  Object.keys(filters).forEach((key) => {
-    if (filters[key]) {
-      queryConditions[key] = filters[key];
+  Object.entries(filters).forEach(([key, value]) => {
+    if (value == null || value === "") return;
+    // Boolean
+    if (value === "true" || value === "false") {
+      queryConditions[key] = value === "true";
+      return;
     }
+    // Number
+    if (
+      typeof value === "string" &&
+      value.trim() !== "" &&
+      !isNaN(Number(value))
+    ) {
+      queryConditions[key] = Number(value);
+      return;
+    }
+    // ObjectId
+    if (mongoose.Types.ObjectId.isValid(value)) {
+      queryConditions[key] = value;
+      return;
+    }
+    // String → Regex
+    if (typeof value === "string") {
+      queryConditions[key] = { $regex: new RegExp(`^${value}$`, "i") };
+      return;
+    }
+    // Fallback
+    queryConditions[key] = value;
   });
 
   // Áp dụng tìm kiếm nếu có

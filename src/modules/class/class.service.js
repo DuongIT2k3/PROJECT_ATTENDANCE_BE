@@ -18,12 +18,12 @@ import { generateSessionDates } from "./class.utils.js";
             const classInstance = await Class.create([data], { session });
             const createdClass = classInstance[0];
 
-            console.log(daysOfWeek)
+            const datesOfWeek = daysOfWeek.split(",").map(Number);
 
             const sessionDates = generateSessionDates(
                 new Date(startDate),
                 totalSessions,
-                daysOfWeek,
+                datesOfWeek,
             );
 
             const sessions = sessionDates.map((sessionDate) => ({
@@ -53,11 +53,11 @@ export const getAllClasses = async (query) => {
         Class,
         {
             ...queryParams,
-            searchFields: ["name", "teacherId", "subjectId", "majorId"],
+            searchFields: ["name"],
         },
         {
             populate: [
-                { path: "teacherId", select: "name" },
+                { path: "teacherId", select: "username" },
                 { path: "subjectId", select: "name" },
                 { path: "majorId", select: "name" },
             ],

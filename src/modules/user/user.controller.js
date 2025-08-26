@@ -14,8 +14,8 @@ export const updateRole = handleAsync(async (req, res) => {
 export const blockUserController = handleAsync(async (req, res) => {
     const { userId } = req.params;
     const { isBlocked } = req.body;
-
-    const updatedUser = await userService.blockUser(userId, isBlocked);
+    const reqUserId = req.user.id;
+    const updatedUser = await userService.blockUser(reqUserId, userId, isBlocked);
     return createResponse(res, 200, `User ${isBlocked ? "blocked" : "unblocked"} successfully`, updatedUser);
 });
 
