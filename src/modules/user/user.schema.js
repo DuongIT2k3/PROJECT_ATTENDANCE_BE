@@ -33,6 +33,6 @@ export const createUserSchema = z
     email: z.string().email("Invalid email format"),
     phone: z.string().optional(),
     role: z.enum(["teacher", "student"]).optional(),
-    majorId: z.string()
+    majorId: z.string().optional(),
   })
   .strict();

@@ -1,4 +1,5 @@
 import { createError } from "./create-error.js";
+import mongoose from "mongoose";
 
 export const queryBuilder = async (Model, queryParams, options = {}) => {
   const {
