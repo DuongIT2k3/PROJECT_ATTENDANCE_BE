@@ -1,7 +1,8 @@
 import User from "../../modules/user/user.model.js";
 import MESSAGES from "../../modules/auth/auth.message.js";
 import { createError } from "../utils/create-error.js";
-import { verifyToken } from "../utils/jwt.js";
+import jwt from "jsonwebtoken"
+import { JWT_SECRET } from "../configs/environments.js";
 
 export const verifyUser = async (req, res, next) => {
 	const authHeader = req.headers?.authorization;
@@ -15,13 +16,13 @@ export const verifyUser = async (req, res, next) => {
 	}
 
 	try {
-		const decoded = verifyToken(token);
-		const user = await User.findById(decoded.decoded.id).select("role deletedAt");
+		const decoded = jwt.verify(token, JWT_SECRET)
+		const user = await User.findById(decoded.id).select("role deletedAt");
 		if (!user || user.deletedAt) {
 			return next(createError(401, "Tài khoản không tồn tại hoặc đã bị xóa"));
 		}
 		req.user = {
-			id: decoded._id,
+			id: decoded.id,
 			role: user.role,
 			_id: decoded.id,
 		};
