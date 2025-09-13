@@ -1,7 +1,7 @@
 import User from "./user.model.js";
 import MESSAGES from "./user.message.js";
 import { queryBuilder } from "../../common/utils/query-builder.js";
-import { randomPassword } from "../../common/utils/password-handler.js";
+import { randomPassword, hashPassword } from "../../common/utils/password-handler.js";
 import {
   generateStudentId,
   generateUsername,
@@ -73,11 +73,18 @@ export const createUser = async (userData) => {
     userData.studentId = await generateStudentId();
   }
 
-  userData.password = randomPassword();
+  const plainPassword = randomPassword();
+  const hashedPassword = await hashPassword(plainPassword);
+  userData.password = hashedPassword;
 
   const newUser = await User.create(userData);
+  
+ 
+  const userResponse = newUser.toObject();
+  delete userResponse.password; 
+  userResponse.plainPassword = plainPassword; 
 
-  return newUser;
+  return userResponse;
 };
 
 export const getAllUsers = async (query) => {
