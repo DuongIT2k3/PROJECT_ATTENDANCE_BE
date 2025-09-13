@@ -15,10 +15,18 @@ import { generateSessionDates } from "./class.utils.js";
             if(!totalSessions || !startDate || !daysOfWeek) {
                 throw createError(400, "Thiếu totalSessions, startDate, hoặc daysOfWeek");
             }
+
             const classInstance = await Class.create([data], { session });
             const createdClass = classInstance[0];
 
-            const datesOfWeek = daysOfWeek.split(",").map(Number);
+            let datesOfWeek;
+            if (typeof daysOfWeek === 'string') {
+                datesOfWeek = daysOfWeek.split(",").map(Number);
+            } else if (Array.isArray(daysOfWeek)) {
+                datesOfWeek = daysOfWeek.map(Number);
+            } else {
+                throw createError(400, "daysOfWeek must be a string or array");
+            }
 
             const sessionDates = generateSessionDates(
                 new Date(startDate),

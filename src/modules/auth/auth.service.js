@@ -80,7 +80,7 @@ export const fotgotPasswordService = async (email) => {
 	
 	const resetToken = signToken({ id: user._id, role: user.role }, RESET_PASSWORD_EXPIRES || "15m");
 
-	const resetLink = `${FRONTEND_URL}/auth/reset-password/${resetToken}`;
+	const resetLink = `${FRONTEND_URL}/reset-password/${resetToken}`;
 	const subject = "[CodeFarm] Đặt lại mật khẩu cho tài khoản của bạn";
 	const html = generateResetPasswordEmail(resetLink, RESET_PASSWORD_EXPIRES || "15 phút");
 	await sendEmail(email, subject, { html });
