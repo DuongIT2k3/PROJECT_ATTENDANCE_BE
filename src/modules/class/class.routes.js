@@ -14,7 +14,7 @@ classRoutes.use(verifyUser);
 classRoutes.use(restrictTo(RoleEnum.SUPER_ADMIN));
 classRoutes.post("/", validBodyRequest(createClassSchema), classController.createClass);
 classRoutes.patch("/:id", validBodyRequest(updateClassSchema),classController.updateClass);
-classRoutes.patch("/soft/:id",classController.softDeleteClass);
+classRoutes.patch("/soft-delete/:id",classController.softDeleteClass);
 classRoutes.patch("/restore/:id", classController.restoreClass);
 classRoutes.delete("/:id", classController.deleteClass);
 

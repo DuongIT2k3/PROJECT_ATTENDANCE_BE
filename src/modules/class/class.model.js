@@ -45,11 +45,19 @@ const classSchema = new mongoose.Schema(
 			enum: Object.values(ShiftEnum),
 			required: true,
 		},
+		daysOfWeek: {
+			type: String,
+			required: true,
+		},
 		room: {
 			type: Object.values(RoomEnum),
 			default: null,
 		},
 		description: {
+			type: String,
+			default: null,
+		},
+		linkOnline: {
 			type: String,
 			default: null,
 		},

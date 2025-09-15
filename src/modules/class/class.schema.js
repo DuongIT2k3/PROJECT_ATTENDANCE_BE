@@ -1,14 +1,18 @@
 import { z } from "zod";
+import mongoose from "mongoose";
 import { ShiftEnum } from "../../common/constants/enum.js";
 import MESSAGES from "./class.message.js";
 
+
+const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
+
 export const createClassSchema = z
 	.object({
-		subjectId: z.string(),
-		majorId: z.string(),
+		subjectId: z.string().refine(isValidObjectId, { message: "Invalid subjectId" }),
+		majorId: z.string().refine(isValidObjectId, { message: "Invalid majorId" }),
 		name: z.string().min(1, MESSAGES.NAME_REQUIRED),
-		teacherId: z.string(),
-		studentIds: z.array(z.string()).optional(),
+		teacherId: z.string().refine(isValidObjectId, { message: "Invalid teacherId" }),
+		studentIds: z.array(z.string().refine(isValidObjectId, { message: "Invalid studentId" })).optional(),
 		startDate: z.string().refine((val) => !isNaN(Date.parse(val)), {
 			message: MESSAGES.INVALID_START_DATE,
 		}),
@@ -16,8 +20,11 @@ export const createClassSchema = z
 		shift: z.enum(Object.values(ShiftEnum), {
 			errorMap: () => ({ message: MESSAGES.INVALID_SHIFT }),
 		}),
-		linkOnline: z.string().optional(),
-		room: z.string().optional(),
+		daysOfWeek: z.array(z.number()).transform((arr) => arr.join(',')),
+		linkOnline: z.string().nullable().optional(),
+		room: z.union([z.string(), z.array(z.string())]).transform((val) => 
+			Array.isArray(val) ? val.join(', ') : val
+		).optional(),
 		deletedAt: z.date().optional().nullable(),
 		description: z.string().optional(),
 		maxStudents: z
@@ -26,18 +33,16 @@ export const createClassSchema = z
 			.min(1, "Số lượng sinh viên tối thiểu là 1")
 			.max(100, "Số lượng sinh viên tối đa không được vượt quá 100")
 			.optional(),
-		room: z.string().optional(),
-		daysOfWeek: z.array(z.number()),
 	})
 	.strict();
 
 export const updateClassSchema = z
 	.object({
-		subjectId: z.string().optional(),
-		majorId: z.string().optional(),
+		subjectId: z.string().refine(isValidObjectId, { message: "Invalid subjectId" }).optional(),
+		majorId: z.string().refine(isValidObjectId, { message: "Invalid majorId" }).optional(),
 		name: z.string().min(1, MESSAGES.NAME_REQUIRED).optional(),
-		teacherId: z.string().optional(),
-		studentIds: z.array(z.string()).optional(),
+		teacherId: z.string().refine(isValidObjectId, { message: "Invalid teacherId" }).optional(),
+		studentIds: z.array(z.string().refine(isValidObjectId, { message: "Invalid studentId" })).optional(),
 		startDate: z
 			.string()
 			.refine((val) => !isNaN(Date.parse(val)), {
@@ -50,6 +55,18 @@ export const updateClassSchema = z
 				errorMap: () => ({ message: MESSAGES.INVALID_SHIFT }),
 			})
 			.optional(),
+		daysOfWeek: z.array(z.number()).transform((arr) => arr.join(',')).optional(),
+		room: z.union([z.string(), z.array(z.string())]).transform((val) => 
+			Array.isArray(val) ? val.join(', ') : val
+		).optional(),
+		description: z.string().optional(),
+		maxStudents: z
+			.number()
+			.int()
+			.min(1, "Số lượng sinh viên tối thiểu là 1")
+			.max(100, "Số lượng sinh viên tối đa không được vượt quá 100")
+			.optional(),
+		linkOnline: z.string().nullable().optional(),
 		deletedAt: z.date().optional().nullable(),
 	})
 	.strict()
