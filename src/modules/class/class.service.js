@@ -120,7 +120,7 @@ export const restoreClass = async (id) => {
 
 export const deleteClass = async (id) => {
   return await Class.findOneAndDelete(
-    { _id: id, deletedAt: null },
+    { _id: id },
     { new: true }
   );
 };
