@@ -3,7 +3,7 @@ import { queryBuilder } from "../../common/utils/query-builder.js";
 import Class from "./class.model.js";
 import Session from "../session/session.model.js";
 import { createError } from "../../common/utils/create-error.js";
-import { generateSessionDates } from "./class.utils.js";
+import { generateSessionDates, validateClassSchedule } from "./class.utils.js";
 
 export const createClass = async (data) => {
   const session = await mongoose.startSession();
@@ -16,9 +16,7 @@ export const createClass = async (data) => {
       throw createError(400, "Thiếu totalSessions, startDate, hoặc daysOfWeek");
     }
 
-    const classInstance = await Class.create([data], { session });
-    const createdClass = classInstance[0];
-
+    // Xử lý daysOfWeek
     let datesOfWeek;
     if (typeof daysOfWeek === "string") {
       datesOfWeek = daysOfWeek.split(",").map(Number);
@@ -28,11 +26,19 @@ export const createClass = async (data) => {
       throw createError(400, "daysOfWeek must be a string or array");
     }
 
+    // Tạo sessionDates
     const sessionDates = generateSessionDates(
       new Date(startDate),
       totalSessions,
       datesOfWeek
     );
+
+    // Validate xung đột lịch học trước khi tạo
+    const dataWithDates = { ...data, sessionDates };
+    await validateClassSchedule(dataWithDates);
+
+    const classInstance = await Class.create([data], { session });
+    const createdClass = classInstance[0];
 
     const sessions = sessionDates.map((sessionDate) => ({
       classId: createdClass._id,
@@ -85,6 +91,8 @@ export const getClassById = async (id) => {
 };
 
 export const updateClass = async (id, data) => {
+  await validateClassSchedule(data, id);
+  
   return await Class.findOneAndUpdate(
     { _id: id, deletedAt: null },
     { $set: data },
