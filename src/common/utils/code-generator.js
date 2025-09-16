@@ -79,3 +79,32 @@ export const generateStudentId = async () => {
 
 	return `${prefix}${formattedSequence}`;
 };
+
+
+export const generateTeacherId = async() => {
+	const prefix = `CFGV`;
+
+	const regex = new RegExp(`^${prefix}\\d{3}$`);
+	const existingIds = await User.find({ studentId: regex }).select("studentId").lean().exec();
+
+	if (!existingIds || existingIds.length === 0) {
+		return `${prefix}001`;
+	}
+
+	// Lấy danh sách số thứ tự (XXX) từ các studentId
+	const sequenceNumbers = existingIds.map((doc) => parseInt(doc.studentId.slice(-3), 10)).filter((num) => !isNaN(num));
+
+	// Tìm số thứ tự lớn nhất và tăng lên 1
+	const maxSequence = Math.max(...sequenceNumbers);
+	const nextSequence = maxSequence + 1;
+
+	// Kiểm tra nếu số thứ tự vượt quá 999
+	if (nextSequence > 999) {
+		throw createError(400, "Đã đạt giới hạn mã sinh viên cho năm hiện tại");
+	}
+
+	// Format số thứ tự thành chuỗi 3 chữ số
+	const formattedSequence = nextSequence.toString().padStart(3, "0");
+
+	return `${prefix}${formattedSequence}`;
+};
