@@ -12,7 +12,7 @@ export const updateAttendance = handleAsync(async (req, res) => {
     const data = await attendanceService.updateAttendance(
         req.params.sessionId,
         req.body,
-        req.use,
+        req.user,
     );
     return createResponse(res, 200, MESSAGES.UPDATED_SUCCESS, data);
 });
@@ -36,4 +36,12 @@ export const checkAttendanceStatus = handleAsync(async (req, res) => {
         req.user,
     );
     return createResponse(res, 200, "Kiểm tra trạng thái điểm danh thành công", data);
+});
+
+export const resetSessionAttendance = handleAsync(async (req, res) => {
+    const data = await attendanceService.resetSessionAttendance(
+        req.params.sessionId,
+        req.user,
+    );
+    return createResponse(res, 200, "Reset điểm danh thành công", data);
 });

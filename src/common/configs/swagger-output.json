@@ -253,34 +253,6 @@
         }
       }
     },
-    "/classes/check-conflicts": {
-      "post": {
-        "description": "",
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/classes/check-conflicts/{classId}": {
-      "post": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "classId",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
     "/classes/soft-delete/{id}": {
       "patch": {
         "description": "",

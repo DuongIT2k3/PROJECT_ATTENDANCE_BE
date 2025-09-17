@@ -19,5 +19,6 @@ attendaceRoutes.patch("/:sessionId", restrictTo([RoleEnum.SUPER_ADMIN, RoleEnum.
 attendaceRoutes.delete("/:id", restrictTo([RoleEnum.SUPER_ADMIN, RoleEnum.TEACHER]), attendanceController.deleteAttendance);
 
 attendaceRoutes.get("/status/:sessionId", restrictTo([RoleEnum.SUPER_ADMIN,RoleEnum.TEACHER]), attendanceController.checkAttendanceStatus);
+attendaceRoutes.delete("/reset/:sessionId", restrictTo([RoleEnum.SUPER_ADMIN]), attendanceController.resetSessionAttendance);
 
 export default attendaceRoutes;
