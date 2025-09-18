@@ -11,14 +11,14 @@ import {
 } from "./attendance.schema.js";
 
 
-const attendaceRoutes = Router();
-attendaceRoutes.use(verifyUser);
-attendaceRoutes.get("/", restrictTo([RoleEnum.SUPER_ADMIN, RoleEnum.TEACHER, RoleEnum.STUDENT]), attendanceController.getAttendances);
-attendaceRoutes.post("/", restrictTo([RoleEnum.SUPER_ADMIN, RoleEnum.TEACHER]), validBodyRequest(createAttendanceSchema), attendanceController.createAttendance);
-attendaceRoutes.patch("/:sessionId", restrictTo([RoleEnum.SUPER_ADMIN, RoleEnum.TEACHER]), validBodyRequest(updateAttendanceSchema), attendanceController.updateAttendance);
-attendaceRoutes.delete("/:id", restrictTo([RoleEnum.SUPER_ADMIN, RoleEnum.TEACHER]), attendanceController.deleteAttendance);
+const attendanceRoutes = Router();
+attendanceRoutes.use(verifyUser);
+attendanceRoutes.get("/", restrictTo([RoleEnum.SUPER_ADMIN, RoleEnum.TEACHER, RoleEnum.STUDENT]), attendanceController.getAttendances);
+attendanceRoutes.post("/", restrictTo([RoleEnum.SUPER_ADMIN, RoleEnum.TEACHER]), validBodyRequest(createAttendanceSchema), attendanceController.createAttendance);
+attendanceRoutes.patch("/:sessionId", restrictTo([RoleEnum.SUPER_ADMIN, RoleEnum.TEACHER]), validBodyRequest(updateAttendanceSchema), attendanceController.updateAttendance);
+attendanceRoutes.delete("/:id", restrictTo([RoleEnum.SUPER_ADMIN, RoleEnum.TEACHER]), attendanceController.deleteAttendance);
 
-attendaceRoutes.get("/status/:sessionId", restrictTo([RoleEnum.SUPER_ADMIN,RoleEnum.TEACHER]), attendanceController.checkAttendanceStatus);
-attendaceRoutes.delete("/reset/:sessionId", restrictTo([RoleEnum.SUPER_ADMIN]), attendanceController.resetSessionAttendance);
+attendanceRoutes.get("/status/:sessionId", restrictTo([RoleEnum.SUPER_ADMIN,RoleEnum.TEACHER]), attendanceController.checkAttendanceStatus);
+attendanceRoutes.delete("/reset/:sessionId", restrictTo([RoleEnum.SUPER_ADMIN]), attendanceController.resetSessionAttendance);
 
-export default attendaceRoutes;
+export default attendanceRoutes;
