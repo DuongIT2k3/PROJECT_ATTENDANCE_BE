@@ -13,16 +13,27 @@ import {
 import { createError } from "../../common/utils/create-error.js";
 import mongoose from "mongoose";
 
-export const updateUserRole = async (userId, role) => {
+export const updateUserRole = async (userId, updateData) => {
   const user = await User.findById(userId);
   if (!user) {
     throw createError(404, MESSAGES.USER_NOT_FOUND);
   }
 
-  if (role === "superAdmin") {
+  if (updateData.role === "superAdmin") {
     throw createError(400, MESSAGES.UNAUTHORIZED);
   }
-  user.role = role;
+
+  // Cập nhật các trường được cung cấp
+  if (updateData.role) {
+    user.role = updateData.role;
+  }
+  if (updateData.majorId) {
+    user.majorId = updateData.majorId;
+  }
+  if (updateData.phone) {
+    user.phone = updateData.phone;
+  }
+  
   user.updatedAt = new Date();
   return user.save();
 };

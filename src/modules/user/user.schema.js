@@ -4,6 +4,8 @@ export const updateRoleSchema = z.object({
     required_error: "Role is required",
     invalid_type_error: "Role must be superAdmin, teacher, or student",
   }),
+  majorId: z.string().optional(),
+  phone: z.string().optional(),
 });
 
 export const blockUserSchema = z.object({

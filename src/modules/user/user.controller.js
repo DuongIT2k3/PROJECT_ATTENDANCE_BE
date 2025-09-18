@@ -5,9 +5,9 @@ import handleAsync from "../../common/utils/async-handler.js";
 
 export const updateRole = handleAsync(async (req, res) => {
     const { userId } = req.params;
-    const { role } = req.body;
+    const updateData = req.body;
 
-    const updatedUser = await userService.updateUserRole(userId, role);
+    const updatedUser = await userService.updateUserRole(userId, updateData);
     return createResponse(res, 200, MESSAGES.UPDATE_USER_ROLE_SUCCESS, updatedUser);
 })
 
