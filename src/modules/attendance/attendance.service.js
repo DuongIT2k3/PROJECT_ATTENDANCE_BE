@@ -41,17 +41,14 @@ const validateAttendanceData = async (
   user,
   session
 ) => {
-  // Kiểm tra session tồn tại
   const sessionExists = await Session.findById(sessionId).session(session);
   !sessionExists && throwError(404, MESSAGES.SESSION_NOT_FOUND);
 
-  // Kiểm tra lớp học
   const classInstance = await Class.findById(sessionExists.classId).session(
     session
   );
   !classInstance && throwError(404, MESSAGES.CLASS_NOT_FOUND);
 
-  // Kiểm tra quyền: teacher chỉ cập nhật điểm danh cho lớp mình phụ trách
   const checkTeacher =
     user.role === RoleEnum.TEACHER &&
     classInstance.teacherId.toString() === user._id.toString();
@@ -62,7 +59,6 @@ const validateAttendanceData = async (
       `Bạn không phải giảng viên lớp này, bạn cũng không phải ${RoleEnum.SUPER_ADMIN} nên không thể cập nhật điểm danh`
     );
 
-  // Kiểm tra tất cả studentId trong attendances
   const studentIds = attendances.map((att) => att.studentId);
   const validStudents = await User.find({
     _id: { $in: studentIds },
@@ -154,8 +150,6 @@ export const createAttendance = async (data, user) => {
       session,
     });
 
-    
-
     await session.commitTransaction();
     session.endSession();
     return createdAttendances;
@@ -222,14 +216,12 @@ export const updateAttendance = async (sessionId, data, user) => {
         }).session(session);
 
         if (existingAttendance) {
-
           return Attendance.findOneAndUpdate(
             { sessionId, studentId, deletedAt: null },
             { status: att.status, note: att.note || "" },
             { new: true, session }
           );
         } else {
-
           const newAttendance = new Attendance({
             sessionId,
             studentId,
@@ -260,7 +252,8 @@ export const updateAttendance = async (sessionId, data, user) => {
 };
 
 export const getAttendances = async (query, user) => {
-  const { sessionId, studentId, classId, startDate, endDate, ...queryParams } = query;
+  const { sessionId, studentId, classId, startDate, endDate, ...queryParams } =
+    query;
   const conditions = { deletedAt: null };
 
   user.role === RoleEnum.STUDENT && (conditions.studentId = user._id);
@@ -278,21 +271,18 @@ export const getAttendances = async (query, user) => {
   sessionId && (conditions.sessionId = sessionId);
   studentId && (conditions.studentId = studentId);
 
-  // Xử lý filter theo classId
   if (classId) {
     let sessionQuery = {
       classId: classId,
       deletedAt: null,
     };
 
-    // Thêm filter theo ngày nếu có
     if (startDate || endDate) {
       sessionQuery.sessionDate = {};
       if (startDate) {
         sessionQuery.sessionDate.$gte = new Date(startDate);
       }
       if (endDate) {
-        // Thêm 1 ngày để include endDate
         const endDatePlusOne = new Date(endDate);
         endDatePlusOne.setDate(endDatePlusOne.getDate() + 1);
         sessionQuery.sessionDate.$lt = endDatePlusOne;
@@ -303,7 +293,6 @@ export const getAttendances = async (query, user) => {
     const sessionIds = sessions.map((s) => s._id);
 
     if (conditions.sessionId) {
-      // Nếu đã có điều kiện sessionId từ teacher role, thì intersect
       const existingSessionIds = Array.isArray(conditions.sessionId.$in)
         ? conditions.sessionId.$in
         : [conditions.sessionId];
@@ -322,11 +311,25 @@ export const getAttendances = async (query, user) => {
     { ...queryParams, ...conditions },
     {
       populate: [
-        { path: "sessionId", select: "sessionDate classId" },
+        {
+          path: "sessionId",
+          select: "sessionDate classId",
+          populate: {
+            path: "classId",
+            select: "name subjectId teacherId",
+            populate: [
+              {
+                path: "subjectId",
+                select: "name code",
+              },
+              {
+                path: "teacherId",
+                select: "fullname",
+              },
+            ],
+          },
+        },
         { path: "studentId", select: "fullname studentId" },
-        { path: "sessionId.classId", select: " name subjectId teacherId " },
-        { path: "sessionId.classId.subjectId", select: "name code" },
-        { path: "sessionId.classId.teacherId", select: "fullname" },
       ],
     }
   );
@@ -349,16 +352,13 @@ export const deleteAttendance = async (id, user) => {
   return attendance;
 };
 
-// Thêm function mới để reset attendance của cả session
 export const resetSessionAttendance = async (sessionId, user) => {
   user.role !== RoleEnum.SUPER_ADMIN &&
     throwError(403, `Chỉ ${RoleEnum.SUPER_ADMIN} mới có thể reset điểm danh`);
 
-  // Kiểm tra session tồn tại
   const sessionExists = await Session.findById(sessionId);
   !sessionExists && throwError(404, "Session không tồn tại");
 
-  // Soft delete tất cả attendance records của session này
   const result = await Attendance.updateMany(
     { sessionId, deletedAt: null },
     { deletedAt: new Date() }
@@ -367,6 +367,6 @@ export const resetSessionAttendance = async (sessionId, user) => {
   return {
     sessionId,
     deletedCount: result.modifiedCount,
-    message: `Đã reset điểm danh cho ${result.modifiedCount} sinh viên`
+    message: `Đã reset điểm danh cho ${result.modifiedCount} sinh viên`,
   };
 };
