@@ -32,100 +32,90 @@ export const generateSessionDates = (
   return sessionDates.sort((a, b) => a - b);
 };
 
-export const validateClassSchedule = async (
-  classData,
-  classIdToExclude = null
-) => {
-  const { name, teacherId, shift, room, studentIds } = classData;
+export const checkClassConflict = async (data, excludeId = null) => {
+  const { name, teacherId, shift, studentIds, classId } = data;
 
-  const excludeCondition = classIdToExclude
-    ? { _id: { $ne: classIdToExclude } }
-    : {};
+  const baseCondition = excludeId ? { _id: { $ne: excludeId } } : {};
 
-
-  const existingClass = await Class.findOne({
-    ...excludeCondition,
+  // 1. Check trùng tên lớp hoặc trùng ca trong 1 phòng
+  const conflict = await Class.findOne({
+    ...baseCondition,
     $or: [
-
+      // Trùng tên lớp
       { name: { $regex: `^${name.trim()}$`, $options: "i" } },
 
-      // Cùng phòng và ca (trừ học online)
+      // Trùng phòng + shift, nhưng loại trừ phòng "Online"
       {
-        $and: [{ room: { $ne: "Online" } }, { room: room }, { shift: shift }],
+        room: { $ne: "Online", $eq: data.room },
+        shift: data.shift,
       },
     ],
   });
 
-  if (existingClass) {
-    const isDuplicateName =
-      existingClass.name.toLowerCase() === name.toLowerCase();
-    const isRoomTimeConflict =
-      existingClass.shift === shift &&
-      existingClass.room === room &&
-      room !== "Online";
+  if (conflict) {
+    const isNameConflict =
+      conflict.name.toLowerCase() === data.name.toLowerCase();
+    const isRoomShiftConflict =
+      conflict.shift === data.shift &&
+      conflict.room.some((r) => r === data.room);
 
-    if (isDuplicateName) {
-      throw createError(409, `Lớp học "${name}" đã được tạo trước đó`);
+    if (isNameConflict) {
+      throw createError(409, `Tên lớp ${data.name} đã tồn tại`);
     }
 
-    if (isRoomTimeConflict) {
+    if (isRoomShiftConflict) {
       throw createError(
         409,
-        `Phòng ${room} đã được sử dụng bởi lớp "${existingClass.name}" vào ca ${shift}`
+        `Phòng ${data.room} đã có lớp ${conflict.name} trong ca ${data.shift}`,
       );
     }
   }
 
-  // 2. Lấy danh sách ngày học - từ data hoặc query database nếu là update
-  let classDates = classData.sessionDates || [];
-  if (!classDates.length && classIdToExclude) {
-    const existingSessions = await Session.find({
-      classId: classIdToExclude,
-    })
-      .select("sessionDate")
-      .lean();
-    classDates = existingSessions.map((session) => session.sessionDate);
+ 
+  let sessionDates = data.sessionDates || [];
+  if (!sessionDates.length && excludeId) {
+    const sessions = await Session.find({ classId: excludeId }).lean();
+    sessionDates = sessions.map((s) => s.sessionDate);
   }
-
-  // 3. Kiểm tra xung đột giảng viên và học viên theo thời gian biểu
-  if (shift && classDates.length > 0) {
-    const [scheduleConflict] = await Session.aggregate([
+  // 3. Check trùng giảng viên và học viên trong 1 ca
+  if (shift && sessionDates.length) {
+    const [sessionConflict] = await Session.aggregate([
       {
-        // Lọc session theo ngày và loại trừ lớp đang cập nhật
+        // 1) Lọc session theo ngày và loại trừ class đang update
         $match: {
-          sessionDate: { $in: classDates },
-          classId: { $ne: classIdToExclude },
+          sessionDate: { $in: sessionDates },
+          classId: { $ne: excludeId },
         },
       },
       {
-        // Backup classId gốc
-        $addFields: { originalClassId: "$classId" },
+        // 2) Lưu classId gốc sang biến tạm để dùng cho $lookup
+        $set: { _classId: "$classId" },
       },
       {
-        // Join với bảng classes
+        // 3) Lookup vào Classes và GHI ĐÈ field "classId" bằng object class
         $lookup: {
           from: "classes",
-          localField: "originalClassId",
+          localField: "_classId",
           foreignField: "_id",
-          as: "classDetails",
+          as: "classId", // <- giữ đúng tên 'classId' như khi populate
         },
       },
       {
-        // Convert array thành object
-        $unwind: "$classDetails",
+        // 4) classId đang là mảng (kết quả lookup), convert thành object
+        $unwind: "$classId",
       },
       {
-        // Chỉ lấy lớp có cùng ca học
-        $match: { "classDetails.shift": shift },
+        // 5) Chỉ giữ những lớp có shift trùng
+        $match: { "classId.shift": shift },
       },
       {
-        // Join với users để lấy thông tin học viên
+        // 6) Lookup users có role = "student" và id nằm trong classId.studentIds
         $lookup: {
-          from: "users",
-          let: { enrolledStudents: "$classDetails.studentIds" },
+          from: "users", // collection users
+          let: { studentIds: "$classId.studentIds" },
           pipeline: [
-            { $match: { $expr: { $in: ["$_id", "$$enrolledStudents"] } } },
-            { $match: { role: "student" } },
+            { $match: { $expr: { $in: ["$_id", "$$studentIds"] } } },
+            { $match: { role: "student" } }, // chỉ lấy user có role student
             {
               $project: {
                 _id: 1,
@@ -135,49 +125,49 @@ export const validateClassSchedule = async (
               },
             },
           ],
-          as: "enrolledStudents",
+          as: "classId.studentIds",
         },
       },
-      // Sắp xếp và lấy 1 kết quả đầu tiên
-      { $sort: { sessionDate: 1 } },
+      // (Optional) Sắp xếp ưu tiên session gần nhất / cũ nhất rồi limit
+      // { $sort: { sessionDate: 1 } },
       { $limit: 1 },
       {
-        // Cleanup: loại bỏ field không cần thiết
-        $project: { originalClassId: 0 },
+        // 7) Dọn rác: bỏ biến tạm _classId nếu không cần
+        $project: { _classId: 0 },
       },
     ]);
+    if (!sessionConflict?.classId) return;
+    const sessionClass = sessionConflict.classId;
+    const sameShift = sessionClass.shift === shift;
 
-    if (!scheduleConflict?.classDetails) return;
+    // 3.1 Check giảng viên
+    const teacherConflict =
+      teacherId &&
+      sessionClass.teacherId?.toString() === teacherId.toString() &&
+      sameShift;
 
-    const conflictedClass = scheduleConflict.classDetails;
-    const isSameTimeSlot = conflictedClass.shift === shift;
-
-    // 3.1 Kiểm tra xung đột giảng viên
-    if (teacherId && isSameTimeSlot) {
-      const isTeacherBusy =
-        conflictedClass.teacherId?.toString() === teacherId.toString();
-
-      if (isTeacherBusy) {
-        throw createError(
-          409,
-          `Giảng viên đã được phân công dạy lớp "${conflictedClass.name}" trong cùng thời gian này`
-        );
-      }
+    if (teacherConflict) {
+      throw createError(
+        409,
+        `Giảng viên đã có lớp ${sessionClass.name} trong ca này`,
+      );
     }
 
-    // 3.2 Kiểm tra xung đột học viên
-    if (studentIds?.length && isSameTimeSlot) {
-      const busyStudents = scheduleConflict.enrolledStudents.filter((student) =>
-        studentIds.map(String).includes(student._id.toString())
+    // 3.2 Check học viên
+    const studentConflict = studentIds?.length && sameShift;
+
+    if (studentConflict) {
+      const conflictedStudents = sessionClass.studentIds.filter((stu) =>
+        studentIds.map(String).includes(stu._id.toString()),
       );
 
-      if (busyStudents.length > 0) {
-        const studentNames = busyStudents.map((student) => student.fullname);
+      if (conflictedStudents.length) {
+        const codes = conflictedStudents.map((stu) => stu.fullname);
         throw createError(
           409,
-          `Học viên: ${studentNames.join(", ")} đã đăng ký lớp "${
-            conflictedClass.name
-          }" trong cùng thời gian này`
+          `Các học viên: ${codes.join(", ")} đã có lớp ${
+            sessionClass.name
+          } trong ca này`,
         );
       }
     }

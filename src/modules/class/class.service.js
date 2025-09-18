@@ -3,7 +3,7 @@ import { queryBuilder } from "../../common/utils/query-builder.js";
 import Class from "./class.model.js";
 import Session from "../session/session.model.js";
 import { createError } from "../../common/utils/create-error.js";
-import { generateSessionDates, validateClassSchedule } from "./class.utils.js";
+import { generateSessionDates, checkClassConflict } from "./class.utils.js";
 
 export const createClass = async (data) => {
   const session = await mongoose.startSession();
@@ -33,9 +33,7 @@ export const createClass = async (data) => {
       datesOfWeek
     );
 
-    // Validate xung đột lịch học trước khi tạo
-    const dataWithDates = { ...data, sessionDates };
-    await validateClassSchedule(dataWithDates);
+    await checkClassConflict({ ...data, sessionDates });
 
     const classInstance = await Class.create([data], { session });
     const createdClass = classInstance[0];
@@ -86,13 +84,13 @@ export const getClassById = async (id) => {
     { path: "subjectId", select: "name" },
     { path: "majorId", select: "name" },
     { path: "teacherId", select: "fullname username" },
-    { path: "studentIds", select: "fullname username email" }
+    { path: "studentIds", select: "fullname username email" },
   ]);
 };
 
 export const updateClass = async (id, data) => {
-  await validateClassSchedule(data, id);
-  
+  await checkClassConflict({ ...data }, id);
+
   return await Class.findOneAndUpdate(
     { _id: id, deletedAt: null },
     { $set: data },
@@ -101,7 +99,7 @@ export const updateClass = async (id, data) => {
     { path: "subjectId", select: "name" },
     { path: "majorId", select: "name" },
     { path: "teacherId", select: "fullname username" },
-    { path: "studentIds", select: "fullname username email" }
+    { path: "studentIds", select: "fullname username email" },
   ]);
 };
 
@@ -122,13 +120,10 @@ export const restoreClass = async (id) => {
     { path: "subjectId", select: "name" },
     { path: "majorId", select: "name" },
     { path: "teacherId", select: "fullname username" },
-    { path: "studentIds", select: "fullname username email" }
+    { path: "studentIds", select: "fullname username email" },
   ]);
 };
 
 export const deleteClass = async (id) => {
-  return await Class.findOneAndDelete(
-    { _id: id },
-    { new: true }
-  );
+  return await Class.findOneAndDelete({ _id: id }, { new: true });
 };
