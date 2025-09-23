@@ -46,6 +46,8 @@ export const loginService = async (dataLogin) => {
 	const user = await User.findOne({ email });
 	if (!user) throwError(401, MESSAGES.USER_NOT_FOUND);
 
+	if (user.isBlocked) throwError(403, MESSAGES.ACCOUNT_BLOCKED);
+
 	const isMatch = await comparePassword(password, user.password);
 	if (!isMatch) throwError(401, MESSAGES.INVALID_PASSWORD);
 

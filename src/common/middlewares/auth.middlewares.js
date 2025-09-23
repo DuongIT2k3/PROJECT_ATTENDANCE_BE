@@ -17,10 +17,15 @@ export const verifyUser = async (req, res, next) => {
 
 	try {
 		const decoded = jwt.verify(token, JWT_SECRET)
-		const user = await User.findById(decoded.id).select("role deletedAt");
+		const user = await User.findById(decoded.id).select("role deletedAt isBlocked");
 		if (!user || user.deletedAt) {
 			return next(createError(401, "Tài khoản không tồn tại hoặc đã bị xóa"));
 		}
+		
+		if (user.isBlocked) {
+			return next(createError(403, MESSAGES.ACCOUNT_BLOCKED));
+		}
+		
 		req.user = {
 			id: decoded.id,
 			role: user.role,

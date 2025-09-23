@@ -15,6 +15,7 @@ const MESSAGES = {
 	USERNAME_ALREADY_EXISTS: "Tên người dùng đã được sử dụng",
 	INVALID_EMAIL: "Email không hợp lệ",
 	INVALID_PASSWORD: "Mật khẩu không hợp lệ",
+	ACCOUNT_BLOCKED: "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.",
 	AUTH_ACCOUNT_INACTIVE: "Tài khoản của bạn chưa được kích hoạt hoặc đã bị vô hiệu hóa",
 	ACCESS_DENIED: "Bạn không có quyền truy cập vào tài nguyên này",
 	NOT_AUTHENTICATED: "Bạn chưa đăng nhập",

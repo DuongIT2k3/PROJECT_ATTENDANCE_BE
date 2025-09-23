@@ -28,13 +28,6 @@
     "/auth/register": {
       "post": {
         "description": "",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          }
-        ],
         "responses": {
           "default": {
             "description": ""
@@ -45,13 +38,6 @@
     "/auth/login": {
       "post": {
         "description": "",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          }
-        ],
         "responses": {
           "default": {
             "description": ""
@@ -63,11 +49,6 @@
       "post": {
         "description": "",
         "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
           {
             "name": "x-refresh-token",
             "in": "header",
@@ -85,11 +66,6 @@
       "post": {
         "description": "",
         "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
           {
             "name": "body",
             "in": "body",
@@ -114,11 +90,6 @@
       "post": {
         "description": "",
         "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
           {
             "name": "body",
             "in": "body",
@@ -145,13 +116,6 @@
     "/attendances/": {
       "get": {
         "description": "",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          }
-        ],
         "responses": {
           "default": {
             "description": ""
@@ -160,13 +124,6 @@
       },
       "post": {
         "description": "",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          }
-        ],
         "responses": {
           "default": {
             "description": ""
@@ -182,11 +139,6 @@
             "name": "sessionId",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
             "type": "string"
           }
         ],
@@ -206,11 +158,6 @@
             "in": "path",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
           }
         ],
         "responses": {
@@ -228,11 +175,6 @@
             "name": "sessionId",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
             "type": "string"
           }
         ],
@@ -252,11 +194,6 @@
             "in": "path",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
           }
         ],
         "responses": {
@@ -269,13 +206,6 @@
     "/classes/": {
       "get": {
         "description": "",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          }
-        ],
         "responses": {
           "default": {
             "description": ""
@@ -284,13 +214,6 @@
       },
       "post": {
         "description": "",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          }
-        ],
         "responses": {
           "default": {
             "description": ""
@@ -306,11 +229,6 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
             "type": "string"
           }
         ],
@@ -328,11 +246,6 @@
             "in": "path",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
           }
         ],
         "responses": {
@@ -348,11 +261,6 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
             "type": "string"
           }
         ],
@@ -372,11 +280,6 @@
             "in": "path",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
           }
         ],
         "responses": {
@@ -395,11 +298,6 @@
             "in": "path",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
           }
         ],
         "responses": {
@@ -412,13 +310,6 @@
     "/majors/": {
       "get": {
         "description": "",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          }
-        ],
         "responses": {
           "default": {
             "description": ""
@@ -427,13 +318,6 @@
       },
       "post": {
         "description": "",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          }
-        ],
         "responses": {
           "default": {
             "description": ""
@@ -449,11 +333,6 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
             "type": "string"
           }
         ],
@@ -471,11 +350,6 @@
             "in": "path",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
           }
         ],
         "responses": {
@@ -491,11 +365,6 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
             "type": "string"
           }
         ],
@@ -515,11 +384,6 @@
             "in": "path",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
           }
         ],
         "responses": {
@@ -537,11 +401,6 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
             "type": "string"
           }
         ],
@@ -561,11 +420,6 @@
             "in": "path",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
           }
         ],
         "responses": {
@@ -584,11 +438,6 @@
             "in": "path",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
           }
         ],
         "responses": {
@@ -604,11 +453,6 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
             "type": "string"
           }
         ],
@@ -626,11 +470,6 @@
             "in": "path",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
           }
         ],
         "responses": {
@@ -643,13 +482,6 @@
     "/sessions/": {
       "post": {
         "description": "",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          }
-        ],
         "responses": {
           "default": {
             "description": ""
@@ -660,13 +492,6 @@
     "/subjects/": {
       "get": {
         "description": "",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          }
-        ],
         "responses": {
           "default": {
             "description": ""
@@ -675,13 +500,6 @@
       },
       "post": {
         "description": "",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          }
-        ],
         "responses": {
           "default": {
             "description": ""
@@ -698,11 +516,6 @@
             "in": "path",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
           }
         ],
         "responses": {
@@ -719,11 +532,6 @@
             "in": "path",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
           }
         ],
         "responses": {
@@ -739,11 +547,6 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
             "type": "string"
           }
         ],
@@ -763,11 +566,6 @@
             "in": "path",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
           }
         ],
         "responses": {
@@ -786,11 +584,6 @@
             "in": "path",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
           }
         ],
         "responses": {
@@ -803,13 +596,6 @@
     "/users/profile/me": {
       "get": {
         "description": "",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          }
-        ],
         "responses": {
           "default": {
             "description": ""
@@ -820,13 +606,6 @@
     "/users/profile/update": {
       "patch": {
         "description": "",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          }
-        ],
         "responses": {
           "default": {
             "description": ""
@@ -837,13 +616,6 @@
     "/users/": {
       "post": {
         "description": "",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          }
-        ],
         "responses": {
           "default": {
             "description": ""
@@ -852,13 +624,6 @@
       },
       "get": {
         "description": "",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          }
-        ],
         "responses": {
           "default": {
             "description": ""
@@ -874,11 +639,6 @@
             "name": "userId",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
             "type": "string"
           }
         ],
@@ -898,23 +658,6 @@
             "in": "path",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "role": {
-                  "example": "any"
-                }
-              }
-            }
           }
         ],
         "responses": {
@@ -932,11 +675,6 @@
             "name": "userId",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
             "type": "string"
           },
           {
