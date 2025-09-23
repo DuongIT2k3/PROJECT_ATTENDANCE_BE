@@ -16,6 +16,19 @@ export const getAllSessionsByClassId = handleAsync(async(req, res) => {
     return createResponse(res, 200, MESSAGES.GET_SUCCESS, sessions);
 });
 
+export const getAllSessionsByClassIdWithoutAttendance = handleAsync(async(req, res) => {
+    const sessions = await sessionService.getAllSessionByClassIdWithoutAttendance(
+        req.params.classId
+    )
+    return createResponse(res, 200, MESSAGES.GET_SUCCESS, sessions);
+});
+
+export const getSessionsByStudent = handleAsync(async(req, res) => {
+    const studentId = req.user.id; // Lấy từ token đã verify
+    const sessions = await sessionService.getAllSessionsByStudentId(studentId);
+    return createResponse(res, 200, MESSAGES.GET_SUCCESS, sessions);
+});
+
 export const getSessionById = handleAsync(async (req, res) => {
     const session = await sessionService.getSessionById(req.params.id);
     if(!session) throwError(404, MESSAGES.NOT_FOUND);
