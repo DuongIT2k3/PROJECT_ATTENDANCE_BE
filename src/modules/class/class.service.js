@@ -79,6 +79,34 @@ export const getAllClasses = async (query) => {
   return data;
 };
 
+export const getClassesByStudentId = async (studentId, query) => {
+  const { includeDeleted = false, ...queryParams } = query;
+  
+  // Tạo filter cho học sinh cụ thể
+  const studentFilter = {
+    studentIds: { $in: [studentId] },
+    deletedAt: includeDeleted ? undefined : null
+  };
+  
+  const data = await queryBuilder(
+    Class,
+    {
+      ...queryParams,
+      searchFields: ["name"],
+      customFilter: studentFilter
+    },
+    {
+      populate: [
+        { path: "teacherId", select: "fullname" },
+        { path: "subjectId", select: "name" },
+        { path: "majorId", select: "name" },
+      ],
+    }
+  );
+
+  return data;
+};
+
 export const getClassById = async (id) => {
   return await Class.findOne({ _id: id, deletedAt: null }).populate([
     { path: "subjectId", select: "name" },

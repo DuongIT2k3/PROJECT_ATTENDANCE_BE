@@ -8,10 +8,13 @@ import { RoleEnum } from "../../common/constants/enum.js";
 const classRoutes = Router();
 
 classRoutes.get("/", classController.getAllClasses);
-classRoutes.get("/:id", classController.getClassById);
 
 classRoutes.use(verifyUser);
-classRoutes.use(restrictTo(RoleEnum.SUPER_ADMIN));
+classRoutes.get("/student/my-classes", restrictTo([RoleEnum.STUDENT]), classController.getClassesByStudent);
+
+classRoutes.get("/:id", classController.getClassById);
+
+classRoutes.use(restrictTo([RoleEnum.SUPER_ADMIN]));
 classRoutes.post("/", validBodyRequest(createClassSchema), classController.createClass);
 classRoutes.patch("/:id", validBodyRequest(updateClassSchema),classController.updateClass);
 classRoutes.patch("/soft-delete/:id",classController.softDeleteClass);

@@ -15,6 +15,12 @@ export const getAllClasses = handleAsync(async(req, res) => {
     return createResponse(res, 200, MESSAGES.GET_SUCCESS, data.data, data.meta);
 });
 
+export const getClassesByStudent = handleAsync(async(req, res) => {
+    const studentId = req.user.id; // Lấy từ token đã verify
+    const data = await classService.getClassesByStudentId(studentId, req.query);
+    return createResponse(res, 200, MESSAGES.GET_SUCCESS, data.data, data.meta);
+});
+
 export const getClassById = handleAsync(async(req, res) =>{
     const classInstance = await classService.getClassById(req.params.id);
     if(!classInstance){
