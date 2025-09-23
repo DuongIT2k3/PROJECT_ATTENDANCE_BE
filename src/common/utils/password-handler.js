@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 
-// * src/common/utils/password-handler.js
+
 export const hashPassword = async (password) => {
 	const salt = await bcrypt.genSalt(10);
 	const hash = await bcrypt.hash(password, salt);
@@ -51,4 +51,13 @@ export const randomPassword = (length = 8) => {
 	} while (!validatePasswordFormat(password) && attempts < maxAttempts);
 	
 	return password;
+};
+
+
+export const generateDefaultPassword = (userCode) => {
+	const lowercase = "abcdefghijklmnopqrstuvwxyz";
+	const specialChars = "@#$%&*";
+	const randomLowercase = lowercase[Math.floor(Math.random() * lowercase.length)];
+	const randomSpecialChar = specialChars[Math.floor(Math.random() * specialChars.length)];
+	return userCode + randomLowercase + randomSpecialChar;
 };

@@ -10,13 +10,14 @@ export const queryBuilder = async (Model, queryParams, options = {}) => {
     search,
     searchFields = [],
     isDeleted,
+    customFilter = {},
     ...filters
   } = queryParams;
 
   const { populate = [] } = options;
 
   // Xây dựng điều kiện truy vấn
-  const queryConditions = {};
+  const queryConditions = { ...customFilter };
 
   // * Nếu không truyền isDeleted (undefined) thì lấy tất cả dữ liệu chưa xoá mềm và đã xoá mềm
   // * Nếu truyền isDeleted là false thì chỉ lấy dữ liệu chưa xoá mềm
